@@ -4,12 +4,14 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const moodRouter = require('./routes/moodRouter');
+const bodyParser = require('body-parser');
 dotenv.config();
 app.use(cors());
 app.use(express.json());
-
+app.use(bodyParser.json()); 
 //const geminiApi = require('./geminiApi');
-
+const userRoutes = require('./routes/users');
+app.use('/api/users', userRoutes);
 app.use( moodRouter);
 
 mongoose.connect(process.env.MONGO_URI)
