@@ -42,13 +42,29 @@ router.get('/:user_id', async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve moods.' });
   }
 });
-
-router.delete('/:id', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const moodData = await Mood.findByIdAndDelete(req.params.id);
+    const moods = await Mood.find({ user_id: req.params.user_id })
+      .populate('user_id', 'name email') // Optional: Populate user details.
+      .sort({ date: -1 });
+
+    res.status(200).json(moods);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to retrieve moods.' });
+  }
+});
+router.delete('/:user_id/:mood_id', async (req, res) => {
+  const { user_id, mood_id } = req.params;
+
+  try {
+    // Find and delete the mood entry for the given user and mood ID
+    const moodData = await Mood.findOneAndDelete({ _id: mood_id, user_id });
+
     if (!moodData) {
-      return res.status(404).json({ error: 'Mood not found.' });
+      return res.status(404).json({ error: 'Mood not found or does not belong to the user.' });
     }
+
     res.status(200).json({ message: 'Mood deleted successfully.', moodData });
   } catch (err) {
     console.error(err);
