@@ -12,8 +12,11 @@ router.post('/', async (req, res) => {
   }
 
   try {
+    console.log("Message:", message);
     const { mood, suggestions } = await run(message); // Replace with your logic for mood analysis.
 
+    console.log("Mood:", mood);
+    console.log("Suggestions:", suggestions);
     // Save mood data to the database
     const moodData = await Mood.create({
       user_id,
